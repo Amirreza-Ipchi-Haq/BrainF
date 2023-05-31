@@ -1,12 +1,12 @@
 #include<conio.h>
 #include<deque>
-#include<fstream>
-#include<iostream>
+#include<cstdio>
+#include<string>
 int main(int argc,char** argv){
 	std::string code;
 	std::deque<char>pointer={0};
-	std::ifstream file(argv[1]);
-	for(char command;file.get(command);)
+	FILE *file=fopen(argv[1],"r");
+	for(auto command=getc(file);!feof(file);command=getc(file))
 		switch(command){
 			case '>':
 			case '<':
@@ -18,7 +18,7 @@ int main(int argc,char** argv){
 			case ']':
 				code+=command;
 		}
-	file.close();
+	fclose(file);
 	for(size_t codeLocation=0,pointerLocation=0;codeLocation<code.size();codeLocation++)
 		switch(code[codeLocation]){
 			case '>':
@@ -36,7 +36,7 @@ int main(int argc,char** argv){
 				pointer[pointerLocation]--;
 				break;
 			case '.':
-				std::cout<<pointer[pointerLocation];
+				putchar(pointer[pointerLocation]);
 				break;
 			case ',':
 				pointer[pointerLocation]=getche();
@@ -47,7 +47,7 @@ int main(int argc,char** argv){
 					codeLocation++;
 					for(unsigned long long i=1;i;codeLocation++)
 						if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){
-							std::cerr<<"Error at character "<<debug<<": Missing ']'!";
+							fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 							return 1;
 						}else if(code[codeLocation]=='[')
 							i++;
@@ -62,7 +62,7 @@ int main(int argc,char** argv){
 					codeLocation--;
 					for(unsigned long long i=1;i;codeLocation--)
 						if(!codeLocation&&(code[codeLocation]!='['||i>1)){
-							std::cerr<<"Error at character "<<debug<<": Missing '['!";
+							fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 							return 1;
 						}else if(code[codeLocation]=='[')
 							i--;
