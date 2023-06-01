@@ -6,6 +6,6 @@ To run a "Hello World" example, create a file with the following text:
 ```
 +[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.
 ```
-Save the text and run it (Windows users can run this using the interpreter, just like any program. UNIX-based need to allow execution of this program, then can run the Linux executable in a terminal by typing `<ProgramLocation>/BrainF_Linux <CodeLocation><CodeName>` (If the terminal is open where the program is, just put a `./` behind `BrainF_Linux`)).
+Save the text and run it (Windows users can run this using the interpreter, just like any program. UNIX-based users need to allow execution of this program, then can run the POSIX executable in a terminal by typing `<ProgramLocation>/BrainF_POSIX <CodeLocation><CodeName>` (If the terminal is open where the program is, just put a `./` behind `BrainF_POSIX`)).
 
 To run this in any directory, you have to add this to your global variables. You can search how to do it in each operating system.
