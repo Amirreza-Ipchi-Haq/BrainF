@@ -26,25 +26,7 @@ int main(int argc,char** argv){
 					code+=command;
 			}
 		fclose(file);//Close the file
-	}else if(!isatty(0)){//Read from a pipe
-		input=fopen("/dev/tty","r");//Open input
-		if(input==0){//Send an error if the current operating system is Windows
-			fprintf(stderr,"Error!\n");
-			return 1;
-		}
-		for(char command=getchar();!feof(stdin);command=getchar())//Read each character of the file
-			switch(command){//Only store the commands acceptable for the language
-				case '>':
-				case '<':
-				case '+':
-				case '-':
-				case '.':
-				case ',':
-				case '[':
-				case ']':
-					code+=command;
-			}
-	}else{//(Interactive mode)
+	}else if(isatty(0)){//(Interactive mode)
 		printf("Entered interactive-mode!\n");//Notify
 		for(size_t pointerLocation=0;1;code=""){//Read a line each time
 			printf(">>> ");//Prompt
@@ -88,7 +70,7 @@ int main(int argc,char** argv){
 							auto debug=codeLocation;//Save current pointer location for debug purposes
 							codeLocation++;//Increase the pointer indicator value
 							for(unsigned long long i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
-								if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){//Alert and abort the program if there's no matching `]`
+								if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
 									fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 									return 2;
 								}else if(code[codeLocation]=='[')//(Nested `[`)
@@ -98,12 +80,12 @@ int main(int argc,char** argv){
 							codeLocation--;//Decrease the pointer indicator value
 						}
 						break;
-					case ']'://Skip to a matching `]` if the current pointer value is non-zero
+					case ']'://Go back to a matching `]` if the current pointer value is non-zero
 						if(pointer[pointerLocation]){
 							auto debug=codeLocation;//Save current pointer location for debug purposes
 							codeLocation--;//Decrease the pointer indicator value
 							for(unsigned long long i=1;i;codeLocation--)//Go back until reaching a matching `[`
-								if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Alert and abort the program if there's no matching `[`
+								if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
 									fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 									return 2;
 								}else if(code[codeLocation]=='[')//(Nested `[`)
@@ -114,6 +96,24 @@ int main(int argc,char** argv){
 						}
 				}
 		}
+	}else{//Read from a pipe
+		input=fopen("/dev/tty","r");//Open input
+		if(!input){//Halt if the current operating system is Windows
+			fprintf(stderr,"Error!\n");
+			return 1;
+		}
+		for(char command=getchar();!feof(stdin);command=getchar())//Read each character of the file
+			switch(command){//Only store the commands acceptable for the language
+				case '>':
+				case '<':
+				case '+':
+				case '-':
+				case '.':
+				case ',':
+				case '[':
+				case ']':
+					code+=command;
+			}
 	}
 	for(size_t codeLocation=0,pointerLocation=0;codeLocation<code.size();codeLocation++)//Read a part of code each time
 		switch(code[codeLocation]){//Choose a command based on the code
@@ -145,7 +145,7 @@ int main(int argc,char** argv){
 					auto debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation++;//Increase the pointer indicator value
 					for(unsigned long long i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
-						if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){//Alert and abort the program if there's no matching `]`
+						if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
 							fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 							return 2;
 						}else if(code[codeLocation]=='[')//(Nested `[`)
@@ -155,12 +155,12 @@ int main(int argc,char** argv){
 					codeLocation--;//Decrease the pointer indicator value
 				}
 				break;
-			case ']'://Skip to a matching `]` if the current pointer value is non-zero
+			case ']'://Go back to a matching `[` if the current pointer value is non-zero
 				if(pointer[pointerLocation]){
 					auto debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation--;//Decrease the pointer indicator value
 					for(unsigned long long i=1;i;codeLocation--)//Go back until reaching a matching `[`
-						if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Alert and abort the program if there's no matching `[`
+						if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
 							fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 							return 2;
 						}else if(code[codeLocation]=='[')//(Nested `[`)
