@@ -2,7 +2,7 @@
 # BrainF
 This is an interpreter written in C++ for a joke esoteric programming language called BrainF (Google this language for more information). The good feature about this interpreter is that it doesn't need to be installed and can be used portable. Also, it's very simple and lightweight.
 ## How to get
-You can open releases to get the pre-compiled executables, or you can compile the code yourself using a G++ compiler.
+You can open releases or click [here](https://github.com/Amirreza-Ipchi-Haq/BrainF/releases) to get the pre-compiled executables, or you can compile the code yourself using a G++ compiler.
 ## How to use
 To run a "Hello World" example, create a file with the following text:
 ```
