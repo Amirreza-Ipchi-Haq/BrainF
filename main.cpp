@@ -10,7 +10,7 @@
 int main(int argc,char** argv){
 	std::string code;//Initialize the main code
 	std::deque<char>pointer={0};//Initialize pointers
-	FILE *input;//Initialize input for pipes
+	FILE *input=0;//Initialize input for pipes
 	if(argc>1){//Read from a file if argument is given
 		FILE *file=fopen(argv[1],"r");//Open the file
 		for(char command=getc(file);!feof(file);command=getc(file))//Read each character of the file
@@ -28,7 +28,7 @@ int main(int argc,char** argv){
 		fclose(file);//Close the file
 	}else if(!isatty(0)){//Read from a pipe
 		input=fopen("/dev/tty","r");//Open input
-		if(input==NULL){//Send an error if the current operating system is Windows
+		if(input==0){//Send an error if the current operating system is Windows
 			fprintf(stderr,"Error!\n");
 			return 1;
 		}
@@ -135,10 +135,10 @@ int main(int argc,char** argv){
 				putchar(pointer[pointerLocation]);
 				break;
 			case ','://Input a character to the current pointer
-				if(isatty(0))
-					pointer[pointerLocation]=getc(input);
-				else
+				if(isatty(0))//(Not piped)
 					pointer[pointerLocation]=getchar();
+				else//(Piped)
+					pointer[pointerLocation]=getc(input);
 				break;
 			case '['://Skip to a matching `]` if the current pointer value is 0
 				if(!pointer[pointerLocation]){
