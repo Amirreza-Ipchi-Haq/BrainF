@@ -8,6 +8,6 @@ To run a "Hello World" example, create a file with the following text:
 ```
 +[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.
 ```
-Save the text and run it (Windows users can run this using the interpreter, just like any program. UNIX-based users need to allow the execution of this program (you can google how to do this), then they can run the POSIX executable in a terminal by typing `<ProgramLocation>/BrainF_POSIX <CodeLocation><CodeName>` (If the terminal is open where the program is, just put a `./` behind `BrainF_POSIX`)).
+Save the text and run it (Windows users can run this using the interpreter, just like any program. UNIX-based users need to allow the execution of this program (You can google how to do this), then they can run the POSIX executable in a terminal by typing `<ProgramLocation>/BrainF_POSIX <CodeLocation><CodeName>` (If the terminal is open where the program is, just put a `./` behind `BrainF_POSIX`)).
 
 To run this in any directory, you have to add this to your global variables. You can search how to do it in each operating system.
