@@ -69,7 +69,7 @@ int main(int argc,char** argv){
 						if(!pointer[pointerLocation]){
 							auto debug=codeLocation;//Save current pointer location for debug purposes
 							codeLocation++;//Increase the pointer indicator value
-							for(unsigned long long i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
+							for(size_t i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
 								if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
 									fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 									return 2;
@@ -84,7 +84,7 @@ int main(int argc,char** argv){
 						if(pointer[pointerLocation]){
 							auto debug=codeLocation;//Save current pointer location for debug purposes
 							codeLocation--;//Decrease the pointer indicator value
-							for(unsigned long long i=1;i;codeLocation--)//Go back until reaching a matching `[`
+							for(size_t i=1;i;codeLocation--)//Go back until reaching a matching `[`
 								if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
 									fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 									return 2;
@@ -144,7 +144,7 @@ int main(int argc,char** argv){
 				if(!pointer[pointerLocation]){
 					auto debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation++;//Increase the pointer indicator value
-					for(unsigned long long i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
+					for(size_t i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
 						if(codeLocation+1==code.size()&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
 							fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 							return 2;
@@ -159,7 +159,7 @@ int main(int argc,char** argv){
 				if(pointer[pointerLocation]){
 					auto debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation--;//Decrease the pointer indicator value
-					for(unsigned long long i=1;i;codeLocation--)//Go back until reaching a matching `[`
+					for(size_t i=1;i;codeLocation--)//Go back until reaching a matching `[`
 						if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
 							fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 							return 2;
