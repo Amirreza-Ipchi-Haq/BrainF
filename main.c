@@ -2,7 +2,7 @@
 #include"cstrcal.h"
 #define NEWLINE(c) ((char)c=='\n'||(char)c=='\r')//Defines a macro to check if a character is a whitespace
 char *append(char *array,size_t len,char front){
-	char *newArray=malloc(sizeof(array)+sizeof(char));
+	char *newArray=malloc((len+1)+sizeof(char));
 	for(size_t i=len;i--;newArray[i+front]=array[i]);
 	newArray[front?0:len]=0,free(array),array=newArray;
 	return newArray;
