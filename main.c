@@ -76,11 +76,11 @@ int main(int argc,char** argv){
 				switch(code[codeLocation]){//Choose a command based on the code
 					case '>'://Push the pointer indicator forward
 						if(++pointerLocation==len)//Add a new pointer to the back if needed
-							pointer=append(pointer,len,0),len++;
+							pointer=append(pointer,len++,0);
 						break;
 					case '<'://Push the pointer indicator backward
 						if(!pointerLocation--)//Add a new pointer to the front if needed
-							pointer=append(pointer,len,1),len++,pointerLocation++;
+							pointer=append(pointer,len++,1),pointerLocation++;
 						break;
 					case '+'://Increase the current pointer value by 1
 						pointer[pointerLocation]++;
@@ -147,11 +147,11 @@ int main(int argc,char** argv){
 		switch(code[codeLocation]){//Choose a command based on the code
 			case '>'://Push the pointer indicator forward
 				if(++pointerLocation==len)//Add a new pointer to the back if needed
-					pointer=append(pointer,len,0),len++;
+					pointer=append(pointer,len++,0);
 				break;
 			case '<'://Push the pointer indicator backward
 				if(!pointerLocation--)//Add a new pointer to the front if needed
-					pointer=append(pointer,len,1),len++,pointerLocation++;
+					pointer=append(pointer,len++,1),pointerLocation++;
 				break;
 			case '+'://Increase the current pointer value by 1
 				pointer[pointerLocation]++;
