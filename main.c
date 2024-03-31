@@ -2,19 +2,17 @@
 #include"cstrcal.h"
 #define NEWLINE(c) ((char)c=='\n'||(char)c=='\r')//Defines a macro to check if a character is a whitespace
 char *append(char *array,size_t len,char front){
-	char *newArray=malloc((len+1)+sizeof(char));
+	char *newArray=malloc((len+1)*sizeof(char));
 	for(size_t i=len;i--;newArray[i+front]=array[i]);
-	newArray[front?0:len]=0,free(array),array=newArray;
+	free(array),newArray[front?0:len]=0;
 	return newArray;
 }
 #ifdef _WIN32
 #include<io.h>
 #define isatty _isatty
-#define DEBUG "Error at locaton %u: Missing '%c'!\n"
 char win=1;
 #else
 #include<unistd.h>
-#define DEBUG "Error at locaton %lu: Missing '%c'!\n"
 char win=0;
 #endif
 int main(int argc,char** argv){
@@ -102,7 +100,7 @@ int main(int argc,char** argv){
 							codeLocation++;//Increase the pointer indicator value
 							for(size_t i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
 								if(codeLocation+1==strlen(code)&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
-									fprintf(stderr,DEBUG,debug,']');
+									fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 									goto finish;
 								}else if(code[codeLocation]=='[')//(Nested `[`)
 									i++;
@@ -117,7 +115,7 @@ int main(int argc,char** argv){
 							codeLocation--;//Decrease the pointer indicator value
 							for(size_t i=1;i;codeLocation--)//Go back until reaching a matching `[`
 								if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
-									fprintf(stderr,DEBUG,debug,'[');
+									fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 									goto finish;
 								}else if(code[codeLocation]=='[')//(Nested `[`)
 									i--;
@@ -173,7 +171,7 @@ int main(int argc,char** argv){
 					codeLocation++;//Increase the pointer indicator value
 					for(size_t i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
 						if(codeLocation+1==strlen(code)&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
-							free(code),free(pointer),fprintf(stderr,DEBUG,debug,']');
+							free(code),free(pointer),fprintf(stderr,"Error at locaton %u: Missing ']'!\n",debug);
 							return 1;
 						}else if(code[codeLocation]=='[')//(Nested `[`)
 							i++;
@@ -188,7 +186,7 @@ int main(int argc,char** argv){
 					codeLocation--;//Decrease the pointer indicator value
 					for(size_t i=1;i;codeLocation--)//Go back until reaching a matching `[`
 						if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
-							free(code),free(pointer),fprintf(stderr,DEBUG,debug,'[');
+							free(code),free(pointer),fprintf(stderr,"Error at locaton %u: Missing '['!\n",debug);
 							return 1;
 						}else if(code[codeLocation]=='[')//(Matching `[`)
 							i--;
