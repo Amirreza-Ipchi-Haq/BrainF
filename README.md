@@ -6,7 +6,7 @@ You can open releases or click [here](https://github.com/Amirreza-Ipchi-Haq/Brai
 ## How to use
 To run a "Hello World" example, create a file with the following text:
 ```
-+[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.[]
++[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.[,]
 ```
 Save the text and run it (Windows users can run this using the interpreter, just like any program). GNU+Linux users need to allow the execution of this program (You can google how to do this), then they can run the GNU+Linux executable in a terminal by typing `<ProgramLocation>/BrainF_Linux <CodeLocation><CodeName>` (If the terminal is open where the program is, just put a `./` behind `BrainF_POSIX`)).
 
