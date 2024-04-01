@@ -16,6 +16,7 @@ char win=1;
 char win=0;
 #endif
 int main(int argc,char** argv){
+	setbuf(stdout,0);
 	char *code=0,*pointer,skip=1;
 	size_t len=1;
 	FILE *input=fopen(win?"CON:":"/dev/tty","r");
