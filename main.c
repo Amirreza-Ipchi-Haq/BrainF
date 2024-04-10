@@ -62,12 +62,16 @@ void execute(){
 				break;
 			case '['://Skip to a matching `]` if the current pointer value is 0
 				if(!pointer[pointerLocation]){
+					if(codeLocation+1==strlen(code)){
+						exitCode=1,fprintf(stderr,"\nError at locaton %u: Missing ']'!\n",codeLocation);
+						return;
+					}
 					size_t debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation++;//Increase the pointer indicator value
 					for(size_t i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
 						if(codeLocation+1==strlen(code)&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
 							exitCode=1,fprintf(stderr,"\nError at locaton %u: Missing ']'!\n",debug);
-							goto finish;
+							return;
 						}else if(code[codeLocation]=='[')//(Nested `[`)
 							i++;
 						else if(code[codeLocation]==']')//(Matching `]`)
@@ -77,12 +81,16 @@ void execute(){
 				break;
 			case ']'://Go back to a matching `]` if the current pointer value is non-zero
 				if(pointer[pointerLocation]){
+					if(!codeLocation){
+						exitCode=1,fprintf(stderr,"\nError at locaton %u: Missing '['!\n",codeLocation);
+						return;
+					}
 					size_t debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation--;//Decrease the pointer indicator value
 					for(size_t i=1;i;codeLocation--)//Go back until reaching a matching `[`
 						if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
 							exitCode=1,fprintf(stderr,"\nError at locaton %u: Missing '['!\n",debug);
-							goto finish;
+							return;
 						}else if(code[codeLocation]=='[')//(Nested `[`)
 							i--;
 						else if(code[codeLocation]==']')//(Matching `]`)
@@ -90,7 +98,6 @@ void execute(){
 					codeLocation++;//Increase the pointer indicator value
 				}
 		}
-	finish:
 	return;
 }
 int main(int argc,char** argv){
