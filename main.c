@@ -12,7 +12,7 @@ char *code,*pointer,exitCode=0;
 size_t len=1,pointerLocation=0;
 FILE *input;
 void read0(FILE *file){
-	if(code[0])
+	if(strlen(code))
 		free(code),code=strtmp("",0);
 	for(char command=getc(file);file==stdin&&isatty(0)?command!='\n':!feof(file);command=getc(file))//Read each character of the file
 		switch(command){//Only store the commands acceptable for the language
@@ -105,16 +105,15 @@ int main(int argc,char** argv){
 	if(argc>1){
 		FILE *file=fopen(argv[1],"r");//Open the file
 		if(file)
-			read0(file);
-		fclose(file);
+			read0(file),fclose(file);
 	}
 	pointer=malloc(sizeof(char)),pointer[0]=0;
-	if(!code[0]&&isatty(0)){//(shell mode)
+	if(!strlen(code)&&isatty(0)){//(shell mode)
 		printf("Entered shell-mode!");//Notify
 		while(1)
 			printf("\n>>> "),read0(stdin),execute();//Prompt
-	}else if(!code[0])
+	}else if(!strlen(code))
 		read0(stdin);
-	execute(),free(code),free(pointer);
+	execute(),free(code),free(pointer),fclose(input);
 	return exitCode;
 }
