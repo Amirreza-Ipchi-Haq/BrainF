@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include"cstrcal.h"
+#include<stdlib.h>
 #ifdef _WIN32
 #include<io.h>
 #define isatty _isatty
@@ -9,11 +9,11 @@
 #define STDIN "/dev/tty"
 #endif
 char *code,*pointer,exitCode=0;
-size_t len=1,pointerLocation=0;
+size_t len=1,lenCode=0,pointerLocation=0;
 FILE *input;
 void read0(FILE *file){
-	if(strlen(code))
-		free(code),code=strtmp("",0);
+	if(lenCode)
+		free(code),lenCode=0;
 	for(char command=getc(file);file==stdin&&isatty(0)?command!='\n':!feof(file);command=getc(file))//Read each character of the file
 		switch(command){//Only store the commands acceptable for the language
 			case '>':
@@ -24,7 +24,11 @@ void read0(FILE *file){
 			case ',':
 			case '[':
 			case ']':
-				code=strappend(code,CHR2STR(command),2);
+				if(lenCode)
+					code=realloc(code,lenCode+1);
+				else
+					code=malloc(1);
+				code[lenCode++]=command;
 		}
 	return;
 }
@@ -38,7 +42,7 @@ void append(char front){
 	return;
 }
 void execute(){
-	for(size_t codeLocation=0,lenCode=strlen(code);codeLocation<lenCode;codeLocation++)//Read a part of code each time
+	for(size_t codeLocation=0;codeLocation<lenCode;codeLocation++)//Read a part of code each time
 		switch(code[codeLocation]){//Choose a command based on the code
 			case '>'://Push the pointer indicator forward
 				if(++pointerLocation==len)//Add a new pointer to the back if needed
@@ -101,18 +105,18 @@ void execute(){
 	return;
 }
 int main(int argc,char** argv){
-	setbuf(stdout,0),input=fopen(STDIN,"r"),code=strtmp("",0);
+	setbuf(stdout,0),input=fopen(STDIN,"r");
 	if(argc>1){
 		FILE *file=fopen(argv[1],"r");//Open the file
 		if(file)
 			read0(file),fclose(file);
 	}
 	pointer=malloc(sizeof(char)),pointer[0]=0;
-	if(!strlen(code)&&isatty(0)){//(shell mode)
+	if(!lenCode&&isatty(0)){//(shell mode)
 		printf("Entered shell-mode!");//Notify
 		while(1)
 			printf("\n>>> "),read0(stdin),execute();//Prompt
-	}else if(!strlen(code))
+	}else if(!lenCode)
 		read0(stdin);
 	execute(),free(code),free(pointer),fclose(input);
 	return exitCode;
