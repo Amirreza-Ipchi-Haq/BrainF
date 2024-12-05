@@ -105,13 +105,13 @@ void execute(){
 	return;
 }
 int main(int argc,char** argv){
-	setbuf(stdout,0),input=fopen(STDIN,"r");
+	setbuf(stdout,NULL),input=fopen(STDIN,"r");
 	if(argc>1){
 		FILE *file=fopen(argv[1],"r");//Open the file
 		if(file)
 			read0(file),fclose(file);
 	}
-	pointer=malloc(sizeof(char)),pointer[0]=0;
+	pointer=malloc(1),pointer[0]=0;
 	if(!lenCode&&isatty(0)){//(shell mode)
 		printf("Entered shell-mode!");//Notify
 		while(1)
