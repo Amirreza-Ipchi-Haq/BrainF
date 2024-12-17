@@ -20,7 +20,7 @@ compileLinux:
 	${STRIP} -s ${TARGET}_Linux
 compileOSX:
 	${CC} ${SRC} -o ${TARGET}_OSX -Wall -Wextra -Os
-	${STRIP} -s ${TARGET}_OSX
+	${STRIP} ${TARGET}_OSX
 compileWindows:
 	echo 'MAINICON ICON "${ICON}"'>resource.rc
 	${WINDRES} -O coff -o resource.res resource.rc
