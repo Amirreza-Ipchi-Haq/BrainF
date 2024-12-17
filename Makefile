@@ -3,6 +3,8 @@ COMMITMESSAGE=""
 EDIT=vi
 ICON=icon.ico
 SRC=main.c
+STRIP=strip
+WINSTRIP=i686-w64-mingw32-strip
 TARGET=BrainF
 WINCC=i686-w64-mingw32-gcc
 WINDRES=i686-w64-mingw32-windres
@@ -14,12 +16,17 @@ commit:
 		git commit;\
 	fi
 compileLinux:
-	${CC} ${SRC} -o ${TARGET}_Linux -m32 -static-libgcc -Wall -Wextra
+	${CC} ${SRC} -o ${TARGET}_Linux -m32 -static -Wall -Wextra -Os
+	${STRIP} -s ${TARGET}_Linux
+compileOSX:
+	${CC} ${SRC} -o ${TARGET}_OSX -Wall -Wextra -Os
+	${STRIP} -s ${TARGET}_OSX
 compileWindows:
 	echo 'MAINICON ICON "${ICON}"'>resource.rc
 	${WINDRES} -O coff -o resource.res resource.rc
-	${WINCC} ${SRC} -o ${TARGET}_Windows.exe resource.res -static-libgcc -Wall -Wextra
+	${WINCC} ${SRC} -o ${TARGET}_Windows.exe resource.res -static -Wall -Wextra -Os
 	rm resource.rc resource.res
+	${WINSTRIP} -s ${TARGET}_Windows.exe
 edit:
 	${EDIT} ${SRC}
 fetch:
