@@ -19,8 +19,11 @@ compileLinux:
 	${CC} ${SRC} -o ${TARGET}_Linux -m32 -static -Wall -Wextra -Os
 	${STRIP} -s ${TARGET}_Linux
 compileOSX:
-	${CC} ${SRC} -o ${TARGET}_OSX -Wall -Wextra -Os
-	${STRIP} ${TARGET}_OSX
+	${CC} ${SRC} -o ${TARGET}_OSX_x64 -Wall -Wextra -Os --target=x86_64-apple-darwin
+	${CC} ${SRC} -o ${TARGET}_OSX_arm64 -Wall -Wextra -Os --target=arm64-apple-darwin
+	lipo -create -output ${TARGET}_OSX ${TARGET}_OSX_x64 ${TARGET}_OSX_arm64
+	rm ${TARGET}_OSX_x64 ${TARGET}_OSX_arm64
+	${STRIP} -s ${TARGET}_OSX
 compileWindows:
 	echo 'MAINICON ICON "${ICON}"'>resource.rc
 	${WINDRES} -O coff -o resource.res resource.rc
