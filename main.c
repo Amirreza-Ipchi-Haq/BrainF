@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #ifdef _WIN32
 #include<io.h>
 #define isatty _isatty
@@ -8,13 +9,19 @@
 #include<unistd.h>
 #define STDIN "/dev/tty"
 #endif
-char *code,*pointer,exitCode=0;
-size_t len=1,lenCode=0,pointerLocation=0;
-FILE *input;
+char *code=NULL,*pointer=NULL,exitCode=0;
+size_t len=128,lenCode=0,lenCodeFull=128,pointerLocation=63;
+FILE *input=NULL;
+void *safeRealloc(void *ptr,size_t size){
+	void *tmpptr=realloc(ptr,size);
+	if(!tmpptr){
+		free(ptr);
+	}
+	return tmpptr;
+}
 void read0(FILE *file){
-	if(lenCode)
-		free(code),lenCode=0;
-	for(char command=getc(file);file==stdin&&isatty(0)?command!='\n':!feof(file);command=getc(file))//Read each character of the file
+	lenCode=0;
+	for(char command=getc(file);input&&isatty(0)?command!='\n':!feof(file);command=getc(file)){//Read each character of the file
 		switch(command){//Only store the commands acceptable for the language
 			case '>':
 			case '<':
@@ -24,33 +31,75 @@ void read0(FILE *file){
 			case ',':
 			case '[':
 			case ']':
-				if(lenCode)
-					code=realloc(code,lenCode+1);
-				else
-					code=malloc(1);
+				if(lenCode==lenCodeFull){
+					lenCodeFull*=2;
+					code=safeRealloc(code,lenCodeFull);
+					if(!code){
+						fclose(input?input:file);
+						if(pointer){
+							free(pointer);
+						}
+						perror("Memory error!");
+						exit(1);
+					}
+				}
 				code[lenCode++]=command;
 		}
-	return;
+	}
+	if(!(input&&isatty(0))){
+		char *tmpCode=realloc(code,lenCode);
+		if(tmpCode){
+			code=tmpCode;
+		}
+	}
+	if(!pointer){
+		pointer=malloc(128);
+		if(!pointer){
+			if(input){
+				fclose(input);
+			}
+			free(code);
+			perror("Memory error!");
+			exit(1);
+		}
+		for(unsigned char i=128;i--;){
+			pointer[i]=0;
+		}
+	}
 }
-void append(char front){
-	pointer=realloc(pointer,len+1);
-	if(front){
-		for(size_t i=len++;i--;pointer[i+1]=pointer[i]);
-		pointer[0]=0;
-	}else
-		pointer[len++]=0;
-	return;
+void append(){	
+	len*=2;
+	pointer=safeRealloc(pointer,len);
+	if(!pointer){
+		if(input){
+			fclose(input);
+		}
+		free(code);
+		free(pointer);
+		perror("Memory error!");
+		exit(1);
+	}
 }
 void execute(){
 	for(size_t codeLocation=0;codeLocation<lenCode;codeLocation++)//Read a part of code each time
 		switch(code[codeLocation]){//Choose a command based on the code
 			case '>'://Push the pointer indicator forward
-				if(++pointerLocation==len)//Add a new pointer to the back if needed
-					append(0);
+				if(++pointerLocation==len){//Add a new pointer to the back if needed
+					append();
+					for(size_t i=len/2;i<len;i++){
+						pointer[i]=0;
+					}
+				}
 				break;
 			case '<'://Push the pointer indicator backward
-				if(!pointerLocation--)//Add a new pointer to the front if needed
-					append(1),pointerLocation++;
+				if(!pointerLocation--){//Add a new pointer to the front if needed
+					pointerLocation=len-1;
+					append();
+					memcpy(pointer+len/2,pointer,len/2);
+					for(size_t i=len/2;i--;){
+						pointer[i]=0;
+					}
+				}
 				break;
 			case '+'://Increase the current pointer value by 1
 				pointer[pointerLocation]++;
@@ -62,7 +111,7 @@ void execute(){
 				putchar(pointer[pointerLocation]);
 				break;
 			case ','://Input a character to the current pointer and skip the newline
-				pointer[pointerLocation]=getc(input);
+				pointer[pointerLocation]=getc(input?input:stdin);
 				break;
 			case '['://Skip to a matching `]` if the current pointer value is 0
 				if(!pointer[pointerLocation]){
@@ -72,14 +121,16 @@ void execute(){
 					}
 					size_t debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation++;//Increase the pointer indicator value
-					for(size_t i=1;i;codeLocation++)//Skip part of the code until reaching a matching `]`
+					for(size_t i=1;i;codeLocation++){//Skip part of the code until reaching a matching `]`
 						if(codeLocation+1==lenCode&&(code[codeLocation]!=']'||i>1)){//Halt if there's no matching `]`
 							exitCode=1,fprintf(stderr,"\nError at locaton %zu: Missing ']'!\n",debug);
 							return;
-						}else if(code[codeLocation]=='[')//(Nested `[`)
+						}else if(code[codeLocation]=='['){//(Nested `[`)
 							i++;
-						else if(code[codeLocation]==']')//(Matching `]`)
+						}else if(code[codeLocation]==']'){//(Matching `]`)
 							i--;
+						}
+					}
 					codeLocation--;//Decrease the pointer indicator value
 				}
 				break;
@@ -91,33 +142,68 @@ void execute(){
 					}
 					size_t debug=codeLocation;//Save current pointer location for debug purposes
 					codeLocation--;//Decrease the pointer indicator value
-					for(size_t i=1;i;codeLocation--)//Go back until reaching a matching `[`
+					for(size_t i=1;i;codeLocation--){//Go back until reaching a matching `[`
 						if(!codeLocation&&(code[codeLocation]!='['||i>1)){//Halt if there's no matching `[`
 							exitCode=1,fprintf(stderr,"\nError at locaton %zu: Missing '['!\n",debug);
 							return;
-						}else if(code[codeLocation]=='[')//(Nested `[`)
+						}else if(code[codeLocation]=='['){//(Nested `[`)
 							i--;
-						else if(code[codeLocation]==']')//(Matching `]`)
+						}else if(code[codeLocation]==']'){//(Matching `]`)
 							i++;
+						}
+					}
 					codeLocation++;//Increase the pointer indicator value
 				}
 		}
-	return;
 }
 int main(int argc,char** argv){
-	setbuf(stdout,NULL),input=fopen(STDIN,"r");
+	setbuf(stdout,NULL);
+	setbuf(stderr,NULL);
 	if(argc>1){
 		FILE *file=fopen(argv[1],"r");//Open the file
-		if(file)
-			read0(file),fclose(file);
+		if(!file){
+			perror("Error trying to open file!");
+			exit(1);
+		}
+		code=malloc(128);
+		if(!code){
+			fclose(input);
+			fclose(file);
+			perror("Memory error!");
+			exit(1);
+		}
+		read0(file);
+		fclose(file);
+	}else{
+		input=fopen(STDIN,"r");
+		if(!input){
+			perror("Memory error!");
+			exit(1);
+		}
 	}
-	pointer=malloc(1),pointer[0]=0;
+	if(!code){
+		code=malloc(128);
+		if(!code){
+			fclose(input);
+			perror("Memory error!");
+			exit(1);
+		}
+	}
 	if(!lenCode&&isatty(0)){//(shell mode)
 		printf("Entered shell-mode!");//Notify
-		while(1)
-			printf("\n>>> "),read0(stdin),execute();//Prompt
-	}else if(!lenCode)
+		while(1){
+			printf("\n>>> ");
+			read0(stdin);
+			execute();//Prompt
+		}
+	}else if(!lenCode){
 		read0(stdin);
-	execute(),free(code),free(pointer),fclose(input);
+	}
+	execute();
+	if(input){
+		fclose(input);
+	}
+	free(code);
+	free(pointer);
 	return exitCode;
 }
