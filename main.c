@@ -192,7 +192,7 @@ int main(int argc,char** argv){
 	if(!lenCode&&isatty(0)){//(shell mode)
 		printf("Entered shell-mode!");//Notify
 		while(1){
-			printf("\n>>> ");
+			printf("\n%%%%%% ");
 			read0(stdin);
 			execute();//Prompt
 		}
